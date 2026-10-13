@@ -6,8 +6,8 @@ Obsidianノートを、リンクをたどりながら収集して1つのHTMLに�
 
 デスクトップ版Obsidian 1.5.0以上に対応しています。プラグイン実行時はNode.jsの別途インストール、Obsidian CLI、他の拡張機能は不要です。
 
-1. このフォルダーで `npm install` → `npm run build` を実行します（ビルド時のみNode.js 18以上が必要）。
-2. 生成された `plugin/obsidian-html` フォルダーを、Vaultの `.obsidian/plugins/obsidian-html` にコピーします。`templates` フォルダーも含めてコピーしてください。設定フォルダー名を変更している場合はその場所を使ってください。
+1. [GitHub Releases](https://github.com/yuumajunya-jpg/obsidian-html/releases/latest) のAssetsから `obsidian-html-X.Y.Z.zip` をダウンロードして展開します（`Source code (zip)` ではありません）。ビルドやNode.jsのインストールは不要です。
+2. 展開した `obsidian-html` フォルダーを、Vaultの `.obsidian/plugins/obsidian-html` にコピーします。`main.js`・`manifest.json`・`templates` フォルダーをすべて含めてコピーしてください。設定フォルダー名を変更している場合はその場所を使ってください。
 3. Obsidianを再起動し、「設定 → コミュニティプラグイン」で **Obsidian HTML** を有効にします。まだコミュニティ一覧には公開されていないため、手動インストールです。
 4. Markdownノートを開き、コマンドパレットで **Obsidian HTML: 現在のノートをHTMLに出力（深度を指定）** を実行します。左リボンのボタンやファイルの右クリックメニューからも実行できます。
 5. 開いた画面でリンクの深さと保存先を指定し、「HTMLを出力」を押します。深さ0は起点だけ、1は直接リンクしたノート、2はさらにそのリンク先までです。ノートへの埋め込みとプロパティ内のリンクも収集対象です。
@@ -16,7 +16,19 @@ Obsidianノートを、リンクをたどりながら収集して1つのHTMLに�
 
 **ショートカット**: 「設定 → ホットキー」で `Obsidian HTML` を検索して上記コマンドに割り当てます。
 
-更新時も `npm run build` 後に生成フォルダーをコピーし直して、プラグインを再読み込みしてください。実行時のノート本文はVault APIから取得するため、編集中のノートは保存してから実行してください。
+更新時は、新しいReleaseのZIPを展開し、Obsidianを終了してからプラグインフォルダーに上書きして再起動してください。実行時のノート本文はVault APIから取得するため、編集中のノートは保存してから実行してください。
+
+### ソースからビルド・配布する場合
+
+開発時は `npm ci` → `npm run build` を実行します（Node.js 18以上が必要）。生成された `plugin/obsidian-html` をVaultのプラグインフォルダーにコピーして動作確認できます。
+
+Windowsでは、ビルド後に次を実行すると `release/obsidian-html-X.Y.Z.zip` を作成できます。
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File scripts/package-plugin.ps1
+```
+
+`plugin/` と `release/` は生成物なのでGitには含めません。GitHubでは `v1.0.0` のようなタグをプッシュすると、GitHub Actionsがテスト・ビルド・ZIP作成を行い、ReleaseにZIPを添付して公開します。タグのバージョンは `manifest.json` と `package.json` のバージョンに合わせてください。
 
 以下は従来のCLIの利用方法です。CLI実行時にはObsidian CLIの有効化が必要です。
 

@@ -1,0 +1,36 @@
+name: Release plugin
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - name: Install dependencies
+        run: npm ci
+      - name: Build and test
+        run: npm test
+      - name: Package plugin
+        shell: pwsh
+        run: ./scripts/package-plugin.ps1
+      - name: Publish release
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          RELEASE_TAG: ${{ github.ref_name }}
+        run: |
+          $version = (Get-Content manifest.json -Raw | ConvertFrom-Json).version
+          gh release create $env:RELEASE_TAG "release/obsidian-html-$version.zip" --verify-tag --title "Obsidian HTML $env:RELEASE_TAG" --notes-file .github/release-notes.md
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }

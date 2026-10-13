@@ -1,0 +1,681 @@
+/* =========================================================
+   Obsidian HTML Export — Default Obsidian Theme
+   ========================================================= */
+
+/* ── カラートークン ── */
+:root {
+  /* Obsidian 本家デフォルトのアクセントパープル */
+  --accent:       #7c3aed;
+  --accent-light: #a78bfa;
+  --accent-glow:  rgba(124, 58, 237, 0.15);
+
+  /* 本家のコールアウトカラーRGB定義 */
+  --color-blue-rgb:     66, 135, 245;
+  --color-green-rgb:    34, 197, 94;
+  --color-cyan-rgb:     6, 182, 212;
+  --color-orange-rgb:   249, 115, 22;
+  --color-red-rgb:      244, 63, 94;
+  --color-purple-rgb:   168, 85, 247;
+  --color-gray-rgb:     158, 158, 158;
+
+  /* Dark theme (default) — 紫成分を排除し、本家Obsidianのダークグレー/黒ベースへ */
+  --bg-primary:   #1e1e1e;
+  --bg-secondary: #181818;
+  --bg-card:      #202020;
+  --bg-hover:     #2e2e2e;
+  --bg-sidebar:   #161616;
+  --bg-input:     #2e2e2e;
+  --bg-code:      #181818;
+
+  --text-primary:   #dedede;
+  --text-secondary: #999999;
+  --text-muted:     #5a5a5a;
+  --text-code:      #e06c75;
+
+  --border:        #303030;
+  --border-hover:  #444444;
+  --border-accent: #555555;
+  --border-code:   #303030;
+
+  --link-color:   #a78bfa;
+  --link-hover:   #c4b5fd;
+  --link-missing: #6b7280;
+
+  --sidebar-width: 260px;
+  --radius-sm: 0px;
+  --radius-md: 0px;
+  --radius-lg: 0px;
+  --radius-full: 9999px;
+
+  --transition: 0.12s ease;
+}
+
+/* Light theme overrides — 本家Obsidianの白/薄グレーベースへ */
+[data-theme="light"] {
+  --bg-primary:   #ffffff;
+  --bg-secondary: #f6f6f6;
+  --bg-card:      #fafafa;
+  --bg-hover:     #e5e5e5;
+  --bg-sidebar:   #f2f2f2;
+  --bg-input:     #ffffff;
+  --bg-code:      #f6f6f6;
+
+  --text-primary:   #2e3338;
+  --text-secondary: #5c6370;
+  --text-muted:     #9da2ab;
+  --text-code:      #d19a66;
+
+  --border:       #e0e0e0;
+  --border-hover: #cccccc;
+  --border-accent: #b0b0b0;
+  --border-code:  #e0e0e0;
+
+  --link-color:   #7c3aed;
+  --link-hover:   #5b21b6;
+}
+
+/* ── リセット ── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html {
+  scroll-behavior: smooth;
+  font-size: 16px;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans JP',
+    system-ui, sans-serif;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  line-height: 1.6;
+  overflow-x: hidden;
+  min-height: 100vh;
+}
+
+/* ════════════════════════════════════════
+   サイドバー
+════════════════════════════════════════ */
+.sidebar {
+  position: fixed;
+  top: 0; left: 0;
+  width: var(--sidebar-width);
+  height: 100vh;
+  background: var(--bg-sidebar);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  z-index: 100;
+  transition: transform var(--transition);
+  transform: translateX(-100%);
+  visibility: hidden;
+}
+
+.sidebar-open .sidebar {
+  transform: translateX(0);
+  visibility: visible;
+}
+
+.sidebar-nav {
+  flex: 1;
+  overflow-y: auto;
+  padding: 4.5rem 0 0.5rem;
+}
+
+.sidebar-section-title {
+  padding: 0.5rem 1.2rem 0.25rem;
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.sidebar-list { list-style: none; padding: 0 0.5rem; }
+.sidebar-item { margin-bottom: 1px; }
+
+.sidebar-link {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.42rem 0.75rem;
+  border-radius: var(--radius-md);
+  color: var(--text-secondary);
+  text-decoration: none;
+  font-size: 0.82rem;
+  transition: background var(--transition), color var(--transition);
+  position: relative;
+}
+.sidebar-link:hover { background: var(--bg-hover); color: var(--text-primary); }
+.sidebar-link.active {
+  background: var(--bg-card);
+  color: var(--text-primary);
+  font-weight: 500;
+}
+.sidebar-link.active::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 20%; height: 60%;
+  width: 3px;
+  background: var(--accent);
+  border-radius: 0 2px 2px 0;
+}
+
+.sidebar-icon { font-size: 0.85rem; flex-shrink: 0; }
+.sidebar-title { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+.badge {
+  font-size: 0.62rem;
+  padding: 0.1rem 0.45rem;
+  border-radius: var(--radius-full);
+  font-weight: 600;
+  flex-shrink: 0;
+}
+.badge-root {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+  border: 1px solid var(--border);
+}
+
+/* ════════════════════════════════════════
+   サイドバー開閉ボタン
+════════════════════════════════════════ */
+.menu-toggle {
+  display: flex;
+  position: fixed;
+  top: 0.9rem; left: 0.9rem;
+  z-index: 200;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 0.55rem 0.6rem;
+  cursor: pointer;
+  color: var(--text-primary);
+  line-height: 0;
+}
+
+/* ════════════════════════════════════════
+   メインコンテンツ
+════════════════════════════════════════ */
+.main-content {
+  margin-left: 0;
+  min-height: 100vh;
+  padding: 2.5rem 2.5rem 5rem;
+  padding-top: 4.5rem;
+  max-width: 860px;
+}
+
+@media (min-width: 769px) {
+  .sidebar-open .main-content {
+    margin-left: var(--sidebar-width);
+    max-width: calc(var(--sidebar-width) + 860px);
+  }
+}
+
+.content-header {
+  margin-bottom: 2.5rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.export-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--accent-light);
+  border-radius: var(--radius-full);
+  margin-bottom: 0.75rem;
+}
+
+.export-title {
+  font-size: 2rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--text-primary);
+  line-height: 1.15;
+}
+
+.export-stats {
+  margin-top: 0.5rem;
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.stat-sep { opacity: 0.4; }
+
+/* ════════════════════════════════════════
+   ノートカード（シャドウ・特別な枠線なし）
+════════════════════════════════════════ */
+.notes-container {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.note-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  scroll-margin-top: 1.5rem;
+}
+
+/* カードヘッダー */
+.note-header {
+  padding: 1.2rem 1.5rem 1rem;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg-secondary);
+}
+
+.note-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.note-breadcrumb {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  display: inline-flex;
+  flex-wrap: wrap; /* 長くても折り返せるように */
+  align-items: center;
+  gap: 0.25rem;
+}
+.note-breadcrumb span,
+.note-breadcrumb a {
+  display: inline-block;
+  max-width: 160px; /* 一定幅以上で省略表示にする */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  vertical-align: middle;
+}
+.note-breadcrumb a.breadcrumb-link {
+  color: var(--text-muted);
+  text-decoration: none;
+  border-bottom: none;
+}
+.note-breadcrumb a.breadcrumb-link:hover {
+  color: var(--text-primary);
+  text-decoration: underline;
+}
+.note-meta-item { font-size: 0.72rem; color: var(--text-muted); }
+.note-tag {
+  font-size: 0.7rem;
+  color: var(--accent-light);
+  background: var(--bg-hover);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-full);
+  padding: 0.1rem 0.5rem;
+}
+
+.note-title {
+  font-size: 1.35rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  line-height: 1.25;
+}
+
+/* カード本文 */
+.note-content { padding: 1.5rem; }
+.no-content { color: var(--text-muted); font-style: italic; font-size: 0.9rem; }
+
+/* カードフッター */
+.note-footer {
+  padding: 0.8rem 1.5rem;
+  border-top: 1px solid var(--border);
+  background: var(--bg-secondary);
+}
+.linked-notes-label {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  margin-right: 0.5rem;
+}
+.note-linked-notes { display: flex; flex-wrap: wrap; align-items: center; gap: 0.4rem; }
+.linked-note-chips { display: flex; flex-wrap: wrap; gap: 0.35rem; }
+
+.linked-note-chip {
+  font-size: 0.73rem;
+  padding: 0.15rem 0.6rem;
+  background: var(--bg-hover);
+  color: var(--text-primary);
+  border-radius: var(--radius-full);
+  text-decoration: none;
+  border: 1px solid var(--border);
+}
+.linked-note-chip:hover {
+  background: var(--accent);
+  color: #fff;
+}
+
+/* ════════════════════════════════════════
+   Markdown コンテンツ スタイル
+════════════════════════════════════════ */
+.note-content h1, .note-content h2, .note-content h3,
+.note-content h4, .note-content h5, .note-content h6 {
+  margin: 1.5em 0 0.5em;
+  color: var(--text-primary);
+  font-weight: 600;
+  line-height: 1.3;
+}
+.note-content h1 { font-size: 1.5rem; }
+.note-content h2 {
+  font-size: 1.25rem;
+  padding-bottom: 0.3em;
+  border-bottom: 1px solid var(--border);
+}
+.note-content h3 { font-size: 1.1rem; }
+.note-content h4 { font-size: 1rem; }
+
+.note-content p { margin: 0.8em 0; }
+
+.note-content a {
+  color: var(--link-color);
+  text-decoration: none;
+  border-bottom: 1px solid var(--accent);
+}
+.note-content a:hover { color: var(--link-hover); }
+
+.note-content a.wikilink {
+  color: var(--link-color);
+}
+.note-content a.wikilink-missing {
+  color: var(--link-missing);
+  border-bottom-style: dashed;
+}
+
+.note-content ul, .note-content ol { padding-left: 1.5em; margin: 0.6em 0; }
+.note-content li { margin: 0.2em 0; }
+.note-content li input[type="checkbox"] { margin-right: 0.4em; }
+
+.note-content blockquote {
+  border-left: 3px solid var(--accent);
+  margin: 1em 0;
+  padding: 0.5em 1em;
+  background: var(--bg-secondary);
+  color: var(--text-secondary);
+}
+
+/* インラインコード */
+.note-content :not(pre) > code {
+  font-family: monospace;
+  font-size: 0.9em;
+  background: var(--bg-code);
+  color: var(--text-primary);
+  padding: 0.15em 0.3em;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+}
+
+/* コードブロック */
+.note-content pre.hljs {
+  background: var(--bg-code) !important;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 1rem;
+  overflow-x: auto;
+  margin: 1em 0;
+}
+.note-content pre.hljs code {
+  font-family: monospace;
+  font-size: 0.85rem;
+  background: none;
+  border: none;
+  padding: 0;
+  color: inherit;
+}
+
+/* テーブル */
+.note-content table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1em 0;
+  font-size: 0.9em;
+}
+.note-content th, .note-content td {
+  padding: 0.5rem 0.8rem;
+  text-align: left;
+  border: 1px solid var(--border);
+}
+.note-content th {
+  background: var(--bg-secondary);
+  font-weight: 600;
+}
+
+.note-content hr { border: none; border-top: 1px solid var(--border); margin: 1.8em 0; }
+
+.note-content img {
+  max-width: 100%;
+  border-radius: var(--radius-md);
+  margin: 0.5em 0;
+}
+
+/* ════════════════════════════════════════
+   KaTeX エラースタイル
+   ========================================= */
+.math-error {
+  color: #f87171;
+  font-family: monospace;
+  background: rgba(248, 113, 113, 0.1);
+  padding: 0.2rem;
+  border-radius: var(--radius-sm);
+}
+
+/* ════════════════════════════════════════
+   脚注 (Footnote) スタイル
+   ========================================= */
+.footnote-ref a {
+  font-size: 0.75em;
+  vertical-align: super;
+  text-decoration: none;
+  border-bottom: none;
+  margin: 0 0.1rem;
+}
+
+.footnotes {
+  margin-top: 2rem;
+  padding-top: 1rem;
+  border-top: 1px dashed var(--border);
+  font-size: 0.88em;
+  color: var(--text-secondary);
+}
+
+.footnotes-list {
+  padding-left: 1.5em;
+}
+
+.footnote-item {
+  margin-bottom: 0.5rem;
+}
+
+.footnote-backref {
+  text-decoration: none;
+  border-bottom: none;
+  margin-left: 0.3rem;
+  color: var(--accent-light);
+}
+.footnote-backref:hover {
+  color: var(--accent);
+}
+
+/* ════════════════════════════════════════
+   Obsidian 本家コールアウトデザイン
+   ========================================= */
+.callout {
+  border-style: solid;
+  border-color: rgba(var(--callout-color), 0.25);
+  border-width: 1px 1px 1px 4px; /* 本家風：左側に太線 */
+  background-color: rgba(var(--callout-color), 0.08); /* 透過背景 */
+  border-radius: var(--radius-md);
+  margin: 1em 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+/* コールアウトカラーマッピング */
+.callout[data-callout="note"],     .callout[data-callout="info"] { --callout-color: var(--color-blue-rgb); }
+.callout[data-callout="todo"]                                     { --callout-color: var(--color-blue-rgb); }
+.callout[data-callout="tip"],      .callout[data-callout="hint"] { --callout-color: var(--color-cyan-rgb); }
+.callout[data-callout="important"]                               { --callout-color: var(--color-cyan-rgb); }
+.callout[data-callout="warning"],  .callout[data-callout="caution"], .callout[data-callout="attention"] { --callout-color: var(--color-orange-rgb); }
+.callout[data-callout="danger"],   .callout[data-callout="error"]   { --callout-color: var(--color-red-rgb); }
+.callout[data-callout="bug"]                                     { --callout-color: var(--color-red-rgb); }
+.callout[data-callout="success"],  .callout[data-callout="check"], .callout[data-callout="done"] { --callout-color: var(--color-green-rgb); }
+.callout[data-callout="example"]                                 { --callout-color: var(--color-purple-rgb); }
+.callout[data-callout="quote"],    .callout[data-callout="cite"]    { --callout-color: var(--color-gray-rgb); }
+.callout[data-callout="abstract"], .callout[data-callout="summary"], .callout[data-callout="tldr"] { --callout-color: var(--color-cyan-rgb); }
+
+summary.callout-title {
+  list-style: none; /* デフォルトの三角マーク非表示 */
+  outline: none;
+}
+summary.callout-title::-webkit-details-marker {
+  display: none;
+}
+
+.callout-title {
+  padding: 0.6rem 0.8rem;
+  font-weight: 600;
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  color: rgb(var(--callout-color));
+  background-color: rgba(var(--callout-color), 0.03); /* ヘッダーを少し濃く */
+  cursor: pointer;
+  user-select: none;
+}
+
+.callout-title-inner {
+  flex: 1;
+}
+
+.callout-fold {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform var(--transition);
+  color: rgb(var(--callout-color));
+  opacity: 0.7;
+}
+
+/* 閉じている時は回転なし（右向き >） */
+details.callout:not([open]) .callout-fold {
+  transform: rotate(0deg);
+}
+
+/* 開いている時は90度回転（下向き v） */
+details.callout[open] .callout-fold {
+  transform: rotate(90deg);
+}
+
+.callout-content {
+  padding: 0.8rem;
+  font-size: 0.9em;
+}
+.callout-content p:first-child { margin-top: 0; }
+.callout-content p:last-child  { margin-bottom: 0; }
+
+.callout-title .callout-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.callout-title .callout-icon svg,
+.callout-fold svg {
+  display: block;
+  stroke: currentColor;
+  fill: none;
+}
+
+/* ── ノート埋め込み ── */
+.note-embed {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.8rem;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  margin: 0.6em 0;
+  font-size: 0.85rem;
+}
+.note-embed-link { color: var(--accent-light); text-decoration: none; }
+.note-embed-missing { color: var(--text-muted); }
+
+/* ── 画像 ── */
+.obsidian-image { display: block; max-width: 100%; border-radius: var(--radius-md); margin: 0.5em 0; }
+.missing-image {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.4rem 0.8rem;
+  background: var(--bg-secondary);
+  border: 1px dashed var(--border);
+  border-radius: var(--radius-md);
+  color: var(--text-muted);
+  font-size: 0.8rem;
+}
+
+/* ════════════════════════════════════════
+   ページフッター
+════════════════════════════════════════ */
+.page-footer {
+  margin-top: 3rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--border);
+  text-align: center;
+  font-size: 0.78rem;
+  color: var(--text-muted);
+}
+
+/* ════════════════════════════════════════
+   レスポンシブ
+════════════════════════════════════════ */
+@media (max-width: 768px) {
+  .main-content {
+    margin-left: 0;
+    padding: 1.25rem 1rem 4rem;
+    padding-top: 4.5rem;
+    max-width: 100%;
+  }
+
+  .note-header  { padding: 1rem 1.2rem; }
+  .note-content { padding: 1.2rem; }
+}
+
+/* ==Highlight== 用のスタイル */
+mark {
+  background-color: rgba(255, 224, 0, 0.35);
+  color: inherit;
+  padding: 0.1em 0.25em;
+}
+
+/* タスクリスト用のスタイル */
+.task-list-item {
+  list-style: none;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  margin-left: -1.2em;
+}
+
+.task-list-item-checkbox {
+  margin-top: 0.35em;
+  cursor: pointer;
+}
+
+/* チェック済みのタスクを打消し線にする（本家同様） */
+.task-list-item:has(.task-list-item-checkbox[checked]) {
+  text-decoration: line-through;
+  color: var(--text-muted);
+}

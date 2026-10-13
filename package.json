@@ -1,0 +1,38 @@
+{
+  "name": "obsidian-html",
+  "version": "1.0.0",
+  "description": "ObsidianノートをリンクをたどりながらHTML単一ファイルに変換するツール",
+  "main": "./dist/index.js",
+  "bin": {
+    "obsidian-html": "./dist/index.js"
+  },
+  "scripts": {
+    "build": "tsc && node scripts/copy-templates.js && node esbuild.config.mjs",
+    "build:cli": "tsc && node scripts/copy-templates.js",
+    "test": "npm run build && node --test tests/*.test.cjs",
+    "copy-css": "node scripts/copy-templates.js",
+    "start": "node dist/index.js",
+    "dev": "tsc -w"
+  },
+  "dependencies": {
+    "@types/katex": "^0.16.8",
+    "@types/markdown-it-footnote": "^3.0.4",
+    "commander": "^12.1.0",
+    "gray-matter": "^4.0.3",
+    "highlight.js": "^11.10.0",
+    "katex": "^0.18.0",
+    "markdown-it": "^14.1.0",
+    "markdown-it-footnote": "^4.0.0",
+    "markdown-it-task-lists": "^2.1.1"
+  },
+  "devDependencies": {
+    "@types/markdown-it": "^14.1.2",
+    "@types/node": "^22.0.0",
+    "esbuild": "^0.28.2",
+    "obsidian": "^1.14.4",
+    "typescript": "^5.5.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

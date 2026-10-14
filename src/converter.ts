@@ -33,6 +33,22 @@ const md = new MarkdownIt({
 
 md.use(footnote);
 
+// 画像はインライン解析時にHTMLへ変換する。事前に <img> に置換すると、
+// 行頭の画像と後続のMarkdownがHTMLブロックとして扱われてしまう。
+md.inline.ruler.before('image', 'obsidian_image', (state, silent) => {
+  if (!state.src.startsWith('![[', state.pos)) return false;
+  const match = /^!\[\[([^\]]+)\]\]/.exec(state.src.slice(state.pos));
+  if (!match) return false;
+  const imageHtml = renderObsidianImage(match[1]);
+  if (!imageHtml) return false;
+  if (!silent) {
+    const token = state.push('html_inline', '', 0);
+    token.content = imageHtml;
+  }
+  state.pos += match[0].length;
+  return true;
+});
+
 // Mermaid コードブロックのカスタムレンダリング
 const defaultFenceRenderer = md.renderer.rules.fence;
 md.renderer.rules.fence = (tokens, idx, options, env, self) => {
@@ -295,6 +311,31 @@ function processCallouts(content: string): string {
 // ウィキリンク処理
 // ──────────────────────────────────────────
 
+function renderObsidianImage(target: string): string | null {
+  const parts = target.split('|');
+  const ref = parts[0].trim();
+  if (!/\.(png|jpe?g|gif|svg|webp|bmp|ico|avif)$/i.test(ref)) return null;
+
+  let width = '';
+  let height = '';
+  for (const part of parts.slice(1)) {
+    const param = part.trim();
+    const sizeMatch = param.match(/^(\d+)x(\d+)$/);
+    if (sizeMatch) {
+      width = sizeMatch[1];
+      height = sizeMatch[2];
+      break;
+    }
+    if (/^\d+$/.test(param)) {
+      width = param;
+      break;
+    }
+  }
+  const widthAttr = width ? ` data-width="${width}"` : '';
+  const heightAttr = height ? ` data-height="${height}"` : '';
+  return `<img data-obsidian-image="${escAttr(ref)}" alt="${escAttr(ref)}"${widthAttr}${heightAttr} class="obsidian-image">`;
+}
+
 function processWikilinks(
   content: string,
   collectedNotes: Set<string>,
@@ -306,27 +347,7 @@ function processWikilinks(
     const ref = parts[0].trim();
     const isImage = /\.(png|jpe?g|gif|svg|webp|bmp|ico|avif)$/i.test(ref);
 
-    if (isImage) {
-      let width = '';
-      let height = '';
-      for (let i = 1; i < parts.length; i++) {
-        const param = parts[i].trim();
-        const sizeMatch = param.match(/^(\d+)x(\d+)$/);
-        if (sizeMatch) {
-          width = sizeMatch[1];
-          height = sizeMatch[2];
-          break;
-        }
-        const widthMatch = param.match(/^(\d+)$/);
-        if (widthMatch) {
-          width = widthMatch[1];
-          break;
-        }
-      }
-      const widthAttr = width ? ` data-width="${width}"` : '';
-      const heightAttr = height ? ` data-height="${height}"` : '';
-      return `<img data-obsidian-image="${escAttr(ref)}" alt="${escAttr(ref)}"${widthAttr}${heightAttr} class="obsidian-image">`;
-    }
+    if (isImage) return _m;
     const rawName = ref.split('#')[0].trim();
     const noteName = context?.resolveNote(rawName) ?? rawName;
     if (collectedNotes.has(noteName)) {
@@ -335,7 +356,7 @@ function processWikilinks(
     return `<div class="note-embed note-embed-missing"><span class="embed-label">📎 ${escHtml(noteName)}</span><span class="embed-note">（このエクスポートに含まれていません）</span></div>`;
   });
 
-  content = content.replace(/\[\[([^\]]+)\]\]/g, (_m, target: string) => {
+  content = content.replace(/(?<!!)\[\[([^\]]+)\]\]/g, (_m, target: string) => {
     const pipeIdx = target.indexOf('|');
     const ref = pipeIdx >= 0 ? target.slice(0, pipeIdx) : target;
     const alias = pipeIdx >= 0 ? target.slice(pipeIdx + 1).trim() : null;

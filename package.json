@@ -1,6 +1,6 @@
 {
   "name": "obsidian-html",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "ObsidianノートをリンクをたどりながらHTML単一ファイルに変換するツール",
   "main": "./dist/index.js",
   "bin": {
